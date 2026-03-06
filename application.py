@@ -1,55 +1,51 @@
 import os
 import pickle
+import numpy as np
 import pandas as pd
 from flask import Flask, render_template, request
 
-app = Flask(__name__)
+# Flask app
+application = Flask(__name__)
+app = application
 
-# Load model and scaler
+# Load scaler and model
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-model = pickle.load(open(os.path.join(BASE_DIR, "models", "ridgecv.pkl"), "rb"))
-scaler = pickle.load(open(os.path.join(BASE_DIR, "models", "scaler.pkl"), "rb"))
+scaler_path = os.path.join(BASE_DIR, "models", "scaler.pkl")
+model_path = os.path.join(BASE_DIR, "models", "ridgecv.pkl")
+
+scaler = pickle.load(open(scaler_path, "rb"))
+model = pickle.load(open(model_path, "rb"))
 
 @app.route("/", methods=["GET", "POST"])
 def predict():
-
     prediction = None
+    form_data = {}
 
     if request.method == "POST":
-        try:
-            Temperature = float(request.form["Temperature"])
-            RH = float(request.form["RH"])
-            Ws = float(request.form["Ws"])
-            Rain = float(request.form["Rain"])
-            FFMC = float(request.form["FFMC"])
-            DMC = float(request.form["DMC"])
-            ISI = float(request.form["ISI"])
-            Classes = float(request.form["Classes"])
-            Region = float(request.form["Region"])
 
-            input_data = pd.DataFrame(
-                [[Temperature, RH, Ws, Rain, FFMC, DMC, ISI, Classes, Region]],
-                columns=[
-                    "Temperature",
-                    "RH",
-                    "Ws",
-                    "Rain",
-                    "FFMC",
-                    "DMC",
-                    "ISI",
-                    "Classes",
-                    "Region"
-                ]
-            )
+        form_data = request.form.to_dict()
 
-            scaled_data = scaler.transform(input_data)
-            prediction = model.predict(scaled_data)[0]
+        Region = float(request.form["Region"])
+        Temperature = float(request.form["Temperature"])
+        RH = float(request.form["RH"])
+        Ws = float(request.form["Ws"])
+        Rain = float(request.form["Rain"])
+        FFMC = float(request.form["FFMC"])
+        DMC = float(request.form["DMC"])
+        ISI = float(request.form["ISI"])
+        Classes = float(request.form["Classes"])
 
-        except Exception as e:
-            prediction = f"Error: {e}"
+        input_data = pd.DataFrame(
+            [[Temperature, RH, Ws, Rain, FFMC, DMC, ISI, Classes, Region]],
+            columns=['Temperature','RH','Ws','Rain','FFMC','DMC','ISI','Classes','Region']
+        )
 
-    return render_template("index.html", prediction=prediction)
+        scaled_data = scaler.transform(input_data)
+
+        prediction = round(model.predict(scaled_data)[0], 2)
+
+    return render_template("index.html", prediction=prediction, form_data=form_data)
 
 
 if __name__ == "__main__":

@@ -7,38 +7,43 @@
 
 <style>
 
+*{
+box-sizing:border-box;
+font-family:"Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
 body{
-font-family:Arial;
+margin:0;
 background:#f4f6f9;
+min-height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
-height:100vh;
-margin:0;
 }
 
-.container{
-background:white;
+.app-container{
 width:900px;
+background:white;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
 display:grid;
 grid-template-columns:1.2fr 1fr;
-border-radius:10px;
-box-shadow:0 10px 25px rgba(0,0,0,0.1);
 overflow:hidden;
 }
 
-.left{
+.left-panel{
 padding:40px;
 }
 
 .title{
 font-size:24px;
-font-weight:bold;
+font-weight:600;
 margin-bottom:10px;
 }
 
 .subtitle{
-color:#666;
+font-size:14px;
+color:#6b7280;
 margin-bottom:25px;
 }
 
@@ -54,44 +59,46 @@ flex-direction:column;
 }
 
 label{
-margin-bottom:5px;
 font-size:13px;
+margin-bottom:5px;
 }
 
 input,select{
 padding:10px;
-border:1px solid #ccc;
 border-radius:6px;
+border:1px solid #d1d5db;
 }
 
 button{
-grid-column:span 2;
+margin-top:20px;
 padding:12px;
+width:100%;
+border:none;
+border-radius:8px;
 background:#2563eb;
 color:white;
-border:none;
-border-radius:6px;
-font-weight:bold;
+font-weight:600;
 cursor:pointer;
 }
 
-button:hover{
-background:#1e40af;
-}
-
-.right{
-background:#111827;
+.right-panel{
+background:#0f172a;
 color:white;
 display:flex;
+flex-direction:column;
 justify-content:center;
 align-items:center;
-flex-direction:column;
-padding:30px;
+padding:40px;
 }
 
-.result{
+.result-title{
+font-size:18px;
+margin-bottom:10px;
+}
+
+.result-value{
 font-size:36px;
-font-weight:bold;
+font-weight:700;
 color:#22c55e;
 }
 
@@ -101,9 +108,9 @@ color:#22c55e;
 
 <body>
 
-<div class="container">
+<div class="app-container">
 
-<div class="left">
+<div class="left-panel">
 
 <div class="title">Forest Fire Risk Prediction</div>
 <div class="subtitle">Machine Learning Model (Ridge Regression)</div>
@@ -116,43 +123,50 @@ color:#22c55e;
 <label>Region</label>
 <select name="Region">
 <option value="0">Bejaia</option>
-<option value="1">Sidi-Bel Abbes</option>
+<option value="1">Sidi Bel-Abbes</option>
 </select>
 </div>
 
 <div class="form-group">
 <label>Temperature</label>
-<input type="number" step="any" name="Temperature" required>
+<input type="number" step="any" name="Temperature"
+value="{{ form_data.get('Temperature','') }}" required>
 </div>
 
 <div class="form-group">
 <label>Relative Humidity</label>
-<input type="number" step="any" name="RH" required>
+<input type="number" step="any" name="RH"
+value="{{ form_data.get('RH','') }}" required>
 </div>
 
 <div class="form-group">
 <label>Wind Speed</label>
-<input type="number" step="any" name="Ws" required>
+<input type="number" step="any" name="Ws"
+value="{{ form_data.get('Ws','') }}" required>
 </div>
 
 <div class="form-group">
 <label>Rain</label>
-<input type="number" step="any" name="Rain" required>
+<input type="number" step="any" name="Rain"
+value="{{ form_data.get('Rain','') }}" required>
 </div>
 
 <div class="form-group">
 <label>FFMC</label>
-<input type="number" step="any" name="FFMC" required>
+<input type="number" step="any" name="FFMC"
+value="{{ form_data.get('FFMC','') }}" required>
 </div>
 
 <div class="form-group">
 <label>DMC</label>
-<input type="number" step="any" name="DMC" required>
+<input type="number" step="any" name="DMC"
+value="{{ form_data.get('DMC','') }}" required>
 </div>
 
 <div class="form-group">
 <label>ISI</label>
-<input type="number" step="any" name="ISI" required>
+<input type="number" step="any" name="ISI"
+value="{{ form_data.get('ISI','') }}" required>
 </div>
 
 <div class="form-group">
@@ -163,28 +177,21 @@ color:#22c55e;
 </select>
 </div>
 
-<button type="submit">Run Prediction</button>
-
 </div>
+
+<button type="submit">Run Prediction</button>
 
 </form>
 
 </div>
 
-<div class="right">
+<div class="right-panel">
 
-{% if prediction is not none %}
-
-<h3>Predicted Fire Weather Index</h3>
-
-<div class="result">
-{{ prediction }}
-</div>
-
+{% if prediction %}
+<div class="result-title">Predicted Fire Weather Index</div>
+<div class="result-value">{{ prediction }}</div>
 {% else %}
-
-<p>Enter parameters and run prediction</p>
-
+<div>Enter values and run prediction</div>
 {% endif %}
 
 </div>
@@ -192,4 +199,5 @@ color:#22c55e;
 </div>
 
 </body>
+
 </html>
